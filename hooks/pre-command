@@ -9,7 +9,7 @@ USERNAME=$(vault read -field=username "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECR
 PASSWORD=$(vault read -field=password "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
 HOSTNAME=$(vault read -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
 
-echo "~~~ Log  in to container registry"
+echo "~~~ Log  in to $HOSTNAME container registry"
 
 if which docker >/dev/null; then
   echo "Logging in to docker as $USERNAME to $HOSTNAME"
