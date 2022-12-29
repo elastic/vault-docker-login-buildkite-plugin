@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if ! which vault >/dev/null; then
+if ! vault -v >/dev/null; then
   echo "Could not find a vault cli to retrieve docker login secrets"
   exit 1
 fi
@@ -11,7 +11,7 @@ HOSTNAME=$(vault read -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECR
 
 echo "~~~ Log  in to $HOSTNAME container registry"
 
-if which docker >/dev/null; then
+if docker --version >/dev/null; then
   echo "Logging in to docker as $USERNAME to $HOSTNAME"
   docker login \
     -u "$USERNAME" \
@@ -19,7 +19,7 @@ if which docker >/dev/null; then
     "$HOSTNAME"
 fi
 
-if which buildah >/dev/null; then
+if buildah --version >/dev/null; then
   echo "Logging in to buildah as $USERNAME to $HOSTNAME"
   buildah login \
     --username "$USERNAME" \
