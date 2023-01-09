@@ -7,3 +7,6 @@ steps:
     plugins:
       - plugin-linter#v3.0.0:
           id: elastic/vault-docker-login
+    agents:
+      provider: "gcp"
+      image: family/ci-ubuntu-2204
