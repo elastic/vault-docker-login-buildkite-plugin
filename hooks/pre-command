@@ -36,5 +36,4 @@ else
   echo "No cli is available to auth. Save creds to /.docker/config.json"
   mkdir ~/.docker && touch ~/.docker/config.json
   echo "{auths: {$HOSTNAME: {auth: $(echo "$USERNAME:$PASSWORD" | base64)}}}" >~/.docker/config.json
-  echo "$USERNAME:$PASSWORD" >~/.docker/config.json
 fi
