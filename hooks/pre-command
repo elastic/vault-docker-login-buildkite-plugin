@@ -17,12 +17,23 @@ if docker --version >/dev/null 2>&1; then
     -u "$USERNAME" \
     -p "$PASSWORD" \
     "$HOSTNAME"
-fi
 
-if buildah --version >/dev/null 2>&1; then
+elif buildah --version >/dev/null 2>&1; then
   echo "Logging in to buildah as $USERNAME to $HOSTNAME"
   buildah login \
     --username "$USERNAME" \
     --password "$PASSWORD" \
     "$HOSTNAME"
+
+elif crane --version >/dev/null 2>&1; then
+  echo "Logging in to crane as $USERNAME to $HOSTNAME"
+  crane auth login \
+    --username "$USERNAME" \
+    --password "$PASSWORD" \
+    "$HOSTNAME"
+
+else
+  echo "No cli is available to auth. Save creds to /.docker/config.json"
+  mkdir ~/.docker && touch ~/.docker/config.json
+  echo "$USERNAME:$PASSWORD" >~/.docker/config.json
 fi
