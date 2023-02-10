@@ -25,7 +25,7 @@ elif buildah --version >/dev/null 2>&1; then
     --password "$PASSWORD" \
     "$HOSTNAME"
 
-elif crane --version >/dev/null 2>&1; then
+elif crane version >/dev/null 2>&1; then
   echo "Logging in to crane as $USERNAME to $HOSTNAME"
   crane auth login \
     --username "$USERNAME" \
