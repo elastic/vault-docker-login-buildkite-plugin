@@ -8,7 +8,7 @@ import sys
 
 log.basicConfig(level=log.INFO, stream=sys.stderr)
 
-config_file_path = sys.argv[1] if len(sys.argv) > 1 else path.join(path.expanduser('~'), 'config.json')  
+config_file_path = sys.argv[1] if len(sys.argv) > 1 else path.join(path.expanduser('~'), '.docker', 'config.json')  
 config = {}
 
 
