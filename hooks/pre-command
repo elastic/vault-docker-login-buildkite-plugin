@@ -33,7 +33,7 @@ elif crane version >/dev/null 2>&1; then
     "$HOSTNAME"
 
 else
-  echo "No cli is available to auth. Save creds to /.docker/config.json"
-  mkdir -p ~/.docker && touch ~/.docker/config.json
-  echo '{"auths": {"'"$HOSTNAME"'": {"auth": "'"$(echo "$USERNAME":"$PASSWORD" | base64)"'"}}}' >~/.docker/config.json
+  echo "No cli is available to auth. Save creds to ~/.docker/config.json"
+  mkdir -p ~/.docker
+  $(dirname "${0}")/generate-config.py
 fi
