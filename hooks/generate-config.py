@@ -17,7 +17,7 @@ if path.exists(config_file_path):
         with open(config_file_path, 'r') as f:
             config = json.load(f)
     except json.decoder.JSONDecodeError:
-        log.error(f'%s is not valid JSON, overwriting with new content.' % config_file_path)
+        log.warn(f'%s is not valid JSON, overwriting with new content.' % config_file_path)
         config = {}
 
 log.info(f'Adding container registry to Docker config: %s' % environ['HOSTNAME'])
