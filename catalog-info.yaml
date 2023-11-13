@@ -1,0 +1,25 @@
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: buildkite-pipelinevault-docker-login-buildkite-plugin
+spec:
+  implementation:
+    apiVersion: buildkite.elastic.dev/v1
+    kind: Pipeline
+    metadata:
+      name: vault-docker-login-buildkite-plugin
+    spec:
+      provider_settings:
+        build_branches: true
+        build_pull_request_forks: false
+        build_pull_requests: false
+        publish_commit_status: true
+        publish_commit_status_per_step: false
+      repository: elastic/vault-docker-login-buildkite-plugin
+      teams:
+        ci-systems: {}
+        everyone:
+          access_level: READ_ONLY
+        release-eng: {}
+  owner: group:release-eng
+  type: buildkite-pipeline
