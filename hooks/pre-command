@@ -35,5 +35,5 @@ elif crane version >/dev/null 2>&1; then
 else
   echo "No cli is available to auth. Save creds to /.docker/config.json"
   mkdir -p ~/.docker && touch ~/.docker/config.json
-  echo '{"auths": {"'"$HOSTNAME"'": {"auth": "'"$(echo "$USERNAME":"$PASSWORD" | base64)"'"}}}' >~/.docker/config.json
+  echo '{"auths": {"'"$HOSTNAME"'": {"auth": "'"$(echo -n "$USERNAME":"$PASSWORD" | base64 --wrap=0)"'"}}}' >~/.docker/config.json
 fi
