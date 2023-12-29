@@ -5,35 +5,56 @@ if ! vault -v >/dev/null 2>&1; then
   exit 1
 fi
 
-USERNAME=$(vault read -field=username "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
-PASSWORD=$(vault read -field=password "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
-HOSTNAME=$(vault read -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
+REGISTRY_USERNAME=$(vault read -field=username "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
+REGISTRY_PASSWORD=$(vault read -field=password "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
+REGISTRY_HOSTNAME=$(vault read -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
 
 echo "~~~ Log  in to $HOSTNAME container registry"
 
 if docker --version >/dev/null 2>&1; then
-  echo "Logging in to docker as $USERNAME to $HOSTNAME"
+  echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with docker cli"
   docker login \
-    -u "$USERNAME" \
-    -p "$PASSWORD" \
-    "$HOSTNAME"
+    --username "$REGISTRY_USERNAME" \
+    --password "$REGISTRY_PASSWORD" \
+    "$REGISTRY_HOSTNAME"
 
 elif buildah --version >/dev/null 2>&1; then
-  echo "Logging in to buildah as $USERNAME to $HOSTNAME"
+  echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with buildah cli"
   buildah login \
-    --username "$USERNAME" \
-    --password "$PASSWORD" \
-    "$HOSTNAME"
+    --username "$REGISTRY_USERNAME" \
+    --password "$REGISTRY_PASSWORD" \
+    "$REGISTRY_HOSTNAME"
 
 elif crane version >/dev/null 2>&1; then
-  echo "Logging in to crane as $USERNAME to $HOSTNAME"
+  echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with crane cli"
   crane auth login \
-    --username "$USERNAME" \
-    --password "$PASSWORD" \
-    "$HOSTNAME"
+    --username "$REGISTRY_USERNAME" \
+    --password "$REGISTRY_PASSWORD" \
+    "$REGISTRY_HOSTNAME"
+
+elif cosign version >/dev/null 2>&1; then
+  echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with cosign cli"
+  cosign login \
+    --username "$REGISTRY_USERNAME" \
+    --password "$REGISTRY_PASSWORD" \
+    "$REGISTRY_HOSTNAME"
+
+elif podman version >/dev/null 2>&1; then
+  echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with podman cli"
+  podman login \
+    --username "$REGISTRY_USERNAME" \
+    --password "$REGISTRY_PASSWORD" \
+    "$REGISTRY_HOSTNAME"
+
+elif skopeo version >/dev/null 2>&1; then
+  echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with skopeo cli"
+  skopeo login \
+    --username "$REGISTRY_USERNAME" \
+    --password "$REGISTRY_PASSWORD" \
+    "$REGISTRY_HOSTNAME"
 
 else
-  echo "No cli is available to auth. Save creds to /.docker/config.json"
-  mkdir -p ~/.docker && touch ~/.docker/config.json
-  echo '{"auths": {"'"$HOSTNAME"'": {"auth": "'"$(echo -n "$USERNAME":"$PASSWORD" | base64 --wrap=0)"'"}}}' >~/.docker/config.json
+  echo "No cli is available to auth. Save creds to $HOME/.docker/config.json"
+  mkdir -p "$HOME/.docker" && touch "$HOME/.docker/config.json"
+  echo '{"auths": {"'"$REGISTRY_HOSTNAME"'": {"auth": "'"$(echo -n "$REGISTRY_USERNAME":"$REGISTRY_PASSWORD" | base64 --wrap=0)"'"}}}' >"$HOME/.docker/config.json"
 fi
