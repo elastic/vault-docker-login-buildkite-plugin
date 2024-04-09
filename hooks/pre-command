@@ -5,9 +5,18 @@ if ! vault -v >/dev/null 2>&1; then
   exit 1
 fi
 
-REGISTRY_USERNAME=$(vault read -field=username "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
-REGISTRY_PASSWORD=$(vault read -field=password "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
-REGISTRY_HOSTNAME=$(vault read -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
+if [[ "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH" == kv* ]]; then
+  VAULT_METHOD='kv get'
+else
+  VAULT_METHOD='read'
+fi
+
+# shellcheck disable=SC2086
+REGISTRY_USERNAME=$(vault $VAULT_METHOD -field=username "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
+# shellcheck disable=SC2086
+REGISTRY_PASSWORD=$(vault $VAULT_METHOD -field=password "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
+# shellcheck disable=SC2086
+REGISTRY_HOSTNAME=$(vault $VAULT_METHOD -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH" || echo 'docker.io')
 
 echo "~~~ Log  in to $HOSTNAME container registry"
 
