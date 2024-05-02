@@ -9,7 +9,7 @@ REGISTRY_USERNAME=$(vault read -field=username "$BUILDKITE_PLUGIN_VAULT_DOCKER_L
 REGISTRY_PASSWORD=$(vault read -field=password "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
 REGISTRY_HOSTNAME=$(vault read -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
 
-echo "~~~ Log  in to $HOSTNAME container registry"
+echo "~~~ Log  in to $REGISTRY_HOSTNAME container registry"
 
 if docker --version >/dev/null 2>&1; then
   echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with docker cli"
