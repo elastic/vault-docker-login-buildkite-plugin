@@ -13,6 +13,12 @@ echo "~~~ Log  in to $REGISTRY_HOSTNAME container registry"
 
 if docker --version >/dev/null 2>&1; then
   echo "Logging to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with docker cli"
+  # For dockerhub we must unset the hostname argument during login
+  # for credentials to be stored correctly in .docker/config.json
+  # See: https://elasticco.atlassian.net/browse/REL-1195
+  if [ "$REGISTRY_HOSTNAME" == "index.docker.io" ]; then
+    REGISTRY_HOSTNAME=""
+  fi
   docker login \
     --username "$REGISTRY_USERNAME" \
     --password "$REGISTRY_PASSWORD" \
