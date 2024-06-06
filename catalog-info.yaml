@@ -21,5 +21,6 @@ spec:
         everyone:
           access_level: READ_ONLY
         release-eng: {}
-  owner: group:release-eng
+        platform-dev-flow: {}
+  owner: group:platform-dev-flow
   type: buildkite-pipeline
