@@ -12,15 +12,12 @@ spec:
       provider_settings:
         build_branches: true
         build_pull_request_forks: false
-        build_pull_requests: false
         publish_commit_status: true
         publish_commit_status_per_step: false
       repository: elastic/vault-docker-login-buildkite-plugin
       teams:
-        ci-systems: {}
         everyone:
           access_level: READ_ONLY
-        release-eng: {}
         platform-dev-flow: {}
   owner: group:platform-dev-flow
   type: buildkite-pipeline
