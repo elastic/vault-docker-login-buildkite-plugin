@@ -9,4 +9,4 @@ steps:
           id: elastic/vault-docker-login
     agents:
       provider: "gcp"
-      image: family/ci-ubuntu-2204
+      image: family/core-ubuntu-2204
