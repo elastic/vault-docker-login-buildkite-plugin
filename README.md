@@ -10,6 +10,6 @@ Add the following to your `pipeline.yml`:
 steps:
   - command: ls
     plugins:
-      - elastic/vault-docker-login#v0.5.1:
+      - elastic/vault-docker-login#v0.5.2:
           secret_path: 'secret/ci/elastic-<<your-repo>>/container-registry/<<credentials>>'
 ```
