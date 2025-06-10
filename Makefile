@@ -17,4 +17,3 @@ shellcheck:
 clean:
 	-docker compose \
 		rm --force --stop
-	-rm -f reports/* build/* tmp/*
