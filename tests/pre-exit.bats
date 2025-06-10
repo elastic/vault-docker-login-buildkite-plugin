@@ -16,8 +16,6 @@ setup () {
 
   assert_success
   assert_output --partial 'Logging out to registry.example.com with docker cli'
-
-  unstub docker
 }
 
 @test "No cli available (default case)" {
@@ -30,7 +28,7 @@ setup () {
   assert_output --partial 'No cli is available to auth. Delete creds from /root/.docker/config.json'
 }
 
-@test "No cli available (skopeo)" {
+@test "Skopeo" {
   stub skopeo \
     "exit 0" \
     "logout \* : exit 0"
