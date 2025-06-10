@@ -2,6 +2,13 @@
 
 Log into docker/buildah with credentials stored in vault.
 
+## Properties
+
+| Name             | Description                                               | Required | Default        |
+|------------------|-----------------------------------------------------------|----------|----------------|
+| `secret_path`    | The Vault secret path with the user/pass/registry fields. | `true`   | ``             |
+| `disable_logout` | Whether to logout after running the command.              | `false`  | `false`        |
+
 ## Example
 
 Add the following to your `pipeline.yml`:

@@ -6,4 +6,6 @@ configuration:
   properties:
     secret_path:
       type: string
+    disable_logout:
+      type: boolean
   additionalProperties: false

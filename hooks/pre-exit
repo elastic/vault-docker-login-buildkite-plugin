@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+echo "~~~ Log out to $REGISTRY_HOSTNAME container registry"
+
+echo "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT"
+if [ "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT:-false}" = "false" ]; then
+  echo 'WARNING: not logging out'
+  exit 0
+fi
+
+if docker --version >/dev/null 2>&1; then
+  echo "Logging out to $REGISTRY_HOSTNAME with docker cli"
+  docker logout "$REGISTRY_HOSTNAME"
+
+elif buildah --version >/dev/null 2>&1; then
+  echo "Logging out to $REGISTRY_HOSTNAME with buildah cli"
+  buildah logout "$REGISTRY_HOSTNAME"
+
+elif crane version >/dev/null 2>&1; then
+  echo "Logging out to $REGISTRY_HOSTNAME with crane cli"
+  crane auth logout "$REGISTRY_HOSTNAME"
+
+elif cosign version >/dev/null 2>&1; then
+  echo 'WARNING: not logging out supported for cosign cli'
+
+elif podman version >/dev/null 2>&1; then
+  echo "Logging out to $REGISTRY_HOSTNAME with podman cli"
+  podman logoutr "$REGISTRY_HOSTNAME"
+
+elif skopeo version >/dev/null 2>&1; then
+  echo "Logging out to $REGISTRY_HOSTNAME with skopeo cli"
+  skopeo logout "$REGISTRY_HOSTNAME"
+
+else
+  echo "No cli is available to auth. Delete creds from $HOME/.docker/config.json"
+  rm "$HOME/.docker/config.json"
+fi

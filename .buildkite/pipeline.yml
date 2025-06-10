@@ -1,4 +1,8 @@
 steps:
+  - label: ":shell: Tests"
+    plugins:
+      - plugin-tester#v4.1.1: ~
+
   - label: "Pre-commit"
     command: ".buildkite/scripts/pre-commit.sh"
     agents:
