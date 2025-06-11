@@ -19,4 +19,5 @@ steps:
     plugins:
       - elastic/vault-docker-login#v0.5.2:
           secret_path: 'secret/ci/elastic-<<your-repo>>/container-registry/<<credentials>>'
+          disable_logout: true
 ```
