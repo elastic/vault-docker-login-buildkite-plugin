@@ -1,6 +1,6 @@
-.PHONY: all lint test shellcheck clean
+.PHONY: all lint pre-commit test shellcheck clean
 
-all: lint shellcheck test
+all: lint pre-commit shellcheck test
 
 test:
 	-docker compose \
@@ -11,10 +11,13 @@ test:
 lint:
 	-docker compose run lint
 
+pre-commit:
+	@echo "Running pre-commit"
+	-.buildkite/scripts/pre-commit.sh
+
 shellcheck:
 	-docker compose run shellcheck
 
 clean:
 	-docker compose \
 		rm --force --stop
-		
