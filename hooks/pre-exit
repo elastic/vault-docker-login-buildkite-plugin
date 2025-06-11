@@ -20,7 +20,7 @@ elif crane version >/dev/null 2>&1; then
   crane auth logout "$REGISTRY_HOSTNAME"
 
 elif cosign version >/dev/null 2>&1; then
-  echo 'WARNING: not logging out supported for cosign cli'
+  echo 'WARNING: logging out not supported for cosign cli'
 
 elif podman version >/dev/null 2>&1; then
   echo "Logging out to $REGISTRY_HOSTNAME with podman cli"

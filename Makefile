@@ -5,7 +5,7 @@ all: lint shellcheck test
 test:
 	-docker compose \
 	  run --rm \
-	  	-v ${PWD}:/app \
+	  	-v "${PWD}:/app" \
 	  	tests
 
 lint:
@@ -17,3 +17,4 @@ shellcheck:
 clean:
 	-docker compose \
 		rm --force --stop
+		

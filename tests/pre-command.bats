@@ -2,6 +2,8 @@
 
 setup () {
   load "${BATS_PLUGIN_PATH}/load.bash"
+  # NOTE: If you need to debug the docker and vault command output,
+  #             you can uncomment the code below:
   # export DOCKER_STUB_DEBUG=/dev/tty
   # export VAULT_STUB_DEBUG=/dev/tty
 
