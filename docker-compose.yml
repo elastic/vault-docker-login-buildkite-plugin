@@ -17,4 +17,3 @@ services:
     working_dir: /plugin
     volumes:
       - ".:/plugin"
-
