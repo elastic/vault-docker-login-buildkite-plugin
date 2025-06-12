@@ -5,6 +5,25 @@ if ! vault -v >/dev/null 2>&1; then
   exit 1
 fi
 
+# Checks whether a specific tool is available based on the current environment
+# or configuration.
+#
+# Usage:
+#   Call this function before executing commands that depend on the tool.
+#
+# Returns:
+#   0 (success) if the tool should be used, 1 (failure) otherwise.
+is_tool_available() {
+  local tool_name="$1"
+
+  if [[ -z "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL" && $(command -v "$tool_name" >/dev/null 2>&1; echo $?) -eq 0 ]] || 
+     [[ "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL" == "$tool_name" ]]; then
+    return 0  # true
+  else
+    return 1  # false
+  fi
+}
+
 if [[ "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH" == kv* ]]; then
   VAULT_METHOD="kv get"
 else
@@ -20,7 +39,7 @@ REGISTRY_HOSTNAME=$(vault $VAULT_METHOD -field=hostname "$BUILDKITE_PLUGIN_VAULT
 
 echo "~~~ Log in to $REGISTRY_HOSTNAME container registry"
 
-if docker --version >/dev/null 2>&1; then
+if is_tool_available "docker"; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with docker cli"
   # For dockerhub we must unset the hostname argument during login
   # for credentials to be stored correctly in .docker/config.json
@@ -33,40 +52,44 @@ if docker --version >/dev/null 2>&1; then
     --password "$REGISTRY_PASSWORD" \
     "$REGISTRY_HOSTNAME"
 
-elif buildah --version >/dev/null 2>&1; then
+elif is_tool_available "buildah"; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with buildah cli"
   buildah login \
     --username "$REGISTRY_USERNAME" \
     --password "$REGISTRY_PASSWORD" \
     "$REGISTRY_HOSTNAME"
 
-elif crane version >/dev/null 2>&1; then
+elif is_tool_available "crane"; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with crane cli"
   crane auth login \
     --username "$REGISTRY_USERNAME" \
     --password "$REGISTRY_PASSWORD" \
     "$REGISTRY_HOSTNAME"
 
-elif cosign version >/dev/null 2>&1; then
+elif is_tool_available "cosign"; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with cosign cli"
   cosign login \
     --username "$REGISTRY_USERNAME" \
     --password "$REGISTRY_PASSWORD" \
     "$REGISTRY_HOSTNAME"
 
-elif podman version >/dev/null 2>&1; then
+elif is_tool_available "podman"; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with podman cli"
   podman login \
     --username "$REGISTRY_USERNAME" \
     --password "$REGISTRY_PASSWORD" \
     "$REGISTRY_HOSTNAME"
 
-elif skopeo version >/dev/null 2>&1; then
+elif is_tool_available "skopeo"; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with skopeo cli"
   skopeo login \
     --username "$REGISTRY_USERNAME" \
     --password "$REGISTRY_PASSWORD" \
     "$REGISTRY_HOSTNAME"
+
+elif [[ -n "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL" ]]; then
+  echo "No cli tool called $BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL is available to auth."
+  exit 1
 
 else
   echo "No cli is available to auth. Save creds to $HOME/.docker/config.json"

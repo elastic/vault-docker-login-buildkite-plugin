@@ -12,4 +12,5 @@ steps:
     plugins:
       - elastic/vault-docker-login#v0.5.2:
           secret_path: 'secret/ci/elastic-<<your-repo>>/container-registry/<<credentials>>'
+          tool: 'docker' # leave it empty or remove it to keep the backward compatibility
 ```

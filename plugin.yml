@@ -6,4 +6,6 @@ configuration:
   properties:
     secret_path:
       type: string
+    tool:
+      type: string
   additionalProperties: false
