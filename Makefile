@@ -1,8 +1,8 @@
-.PHONY: all lint pre-commit test shellcheck clean
+.PHONY: all lint pre-commit tests shellcheck clean
 
-all: lint pre-commit shellcheck test
+all: lint pre-commit shellcheck tests
 
-test:
+tests:
 	-docker compose \
 	  run --rm \
 	  	-v "${PWD}:/app" \
