@@ -16,6 +16,8 @@ spec:
         publish_commit_status_per_step: false
       repository: elastic/vault-docker-login-buildkite-plugin
       teams:
+        observablt-robots:
+          access_level: BUILD_AND_READ
         everyone:
           access_level: READ_ONLY
         platform-dev-flow: {}
