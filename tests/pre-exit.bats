@@ -2,15 +2,21 @@
 
 setup () {
   load "${BATS_PLUGIN_PATH}/load.bash"
-  # export DOCKER_STUB_DEBUG=/dev/tty
+  # NOTE: If you need to debug the docker and vault command output,
+  #             you can uncomment the code below:
+  #export DOCKER_STUB_DEBUG=/dev/tty
+  export BUILDAH_STUB_DEBUG=/dev/tty
 
   export REGISTRY_HOSTNAME="registry.example.com"
+  export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL=""
 }
 
 @test "Clean logout execution" {
+  unstub docker
   stub docker \
     "exit 0" \
-    "logout \* : exit 0"
+    "logout \* : exit 0" \
+    "--version : exit 0"
 
   run "$PWD/hooks/pre-exit"
 
@@ -26,17 +32,25 @@ setup () {
 
   assert_success
   assert_output --partial 'No cli is available to auth. Delete creds from /root/.docker/config.json'
+
+  unstub rm
 }
 
-@test "Skopeo" {
-  stub skopeo \
-    "exit 0" \
+@test "Buildah" {
+  stub docker \
+    " \* : exit 1" \
+    "--version : exit 1"
+
+  stub buildah \
+    "--version : exit 0" \
     "logout \* : exit 0"
 
   run "$PWD/hooks/pre-exit"
 
   assert_success
-  assert_output --partial 'Logging out to registry.example.com with skopeo cli'
+  assert_output --partial 'Logging out to registry.example.com with buildah cli'
+
+  unstub buildah
 }
 
 @test "When disable logout is turned on" {
