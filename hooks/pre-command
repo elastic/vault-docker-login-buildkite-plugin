@@ -96,3 +96,6 @@ else
   mkdir -p "$HOME/.docker" && touch "$HOME/.docker/config.json"
   echo '{"auths": {"'"$REGISTRY_HOSTNAME"'": {"auth": "'"$(echo -n "$REGISTRY_USERNAME":"$REGISTRY_PASSWORD" | base64 --wrap=0)"'"}}}' >"$HOME/.docker/config.json"
 fi
+
+# export to help with the logout
+export REGISTRY_HOSTNAME

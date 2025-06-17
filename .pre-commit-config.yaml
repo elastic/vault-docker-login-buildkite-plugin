@@ -18,6 +18,6 @@ repos:
   rev: "v0.0.17"
   hooks:
     - id: "shfmt"
-      exclude: ^bin/.*?hermit
+      exclude: (^bin/.*?hermit|tests/.*)
     - id: "shellcheck"
       exclude: ^bin/activate-hermit

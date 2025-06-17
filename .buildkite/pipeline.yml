@@ -1,12 +1,23 @@
 steps:
+  - label: ":bash: Tests"
+    command: "make tests"
+    agents:
+      provider: "gcp"
+      image: family/core-ubuntu-2204
+
+  - label: ":shell: Shellcheck"
+    command: "make shellcheck"
+    agents:
+      provider: "gcp"
+      image: family/core-ubuntu-2204
+
   - label: "Pre-commit"
-    command: ".buildkite/scripts/pre-commit.sh"
+    command: "make pre-commit"
     agents:
       image: "docker.elastic.co/ci-agent-images/ubuntu-build-essential"
-  - label: ":sparkles: Buildkite plugin Lint"
-    plugins:
-      - plugin-linter#v3.0.0:
-          id: elastic/vault-docker-login
+
+  - label: ":sparkles: Lint"
+    command: "make lint"
     agents:
       provider: "gcp"
       image: family/core-ubuntu-2204
