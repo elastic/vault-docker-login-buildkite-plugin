@@ -24,7 +24,7 @@ elif cosign version >/dev/null 2>&1; then
 
 elif podman version >/dev/null 2>&1; then
   echo "Logging out to $REGISTRY_HOSTNAME with podman cli"
-  podman logoutr "$REGISTRY_HOSTNAME"
+  podman logout "$REGISTRY_HOSTNAME"
 
 elif skopeo version >/dev/null 2>&1; then
   echo "Logging out to $REGISTRY_HOSTNAME with skopeo cli"

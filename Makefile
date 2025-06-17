@@ -12,7 +12,6 @@ lint:
 	-docker compose run lint
 
 pre-commit:
-	@echo "Running pre-commit"
 	-.buildkite/scripts/pre-commit.sh
 
 shellcheck:
