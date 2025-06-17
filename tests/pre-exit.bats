@@ -2,13 +2,14 @@
 
 load "${BATS_PLUGIN_PATH}/load.bash"
 load '../lib/shared'
+load '../lib/logout'
 
 # NOTE: If you need to debug the docker and vault command output,
 #             you can uncomment the code below:
 #export DOCKER_STUB_DEBUG=/dev/tty
 #export BUILDAH_STUB_DEBUG=/dev/tty
 
-setup_file() {
+setup () {
   export REGISTRY_HOSTNAME="registry.example.com"
   export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL=""
 }

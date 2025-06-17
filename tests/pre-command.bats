@@ -2,6 +2,7 @@
 
 load "${BATS_PLUGIN_PATH}/load.bash"
 load '../lib/shared'
+load '../lib/login'
 
 # NOTE: If you need to debug the docker and vault command output,
 #       you can uncomment the code below:

@@ -4,6 +4,8 @@ DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 
 # shellcheck source=lib/shared.bash
 . "$DIR/../lib/shared.bash"
+# shellcheck source=lib/logout.bash
+. "$DIR/../lib/logout.bash"
 
 echo "~~~ Log out to $REGISTRY_HOSTNAME container registry"
 
