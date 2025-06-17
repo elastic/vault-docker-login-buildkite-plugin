@@ -12,32 +12,28 @@ if [[ "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT:-false}" = "true" ]]
   exit 0
 fi
 
-if is_tool_available "docker" "docker --version"; then
-  echo "Logging out to $REGISTRY_HOSTNAME with docker cli"
-  docker logout "$REGISTRY_HOSTNAME"
+if [[ -n "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL" ]]; then
+  logout "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL}" "$REGISTRY_HOSTNAME"
+  exit 0
+fi
 
-elif is_tool_available "buildah" "buildah --version"; then
-  echo "Logging out to $REGISTRY_HOSTNAME with buildah cli"
-  buildah logout "$REGISTRY_HOSTNAME"
+if is_tool_available "docker --version"; then
+  docker_logout "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "crane" "crane version"; then
-  echo "Logging out to $REGISTRY_HOSTNAME with crane cli"
-  crane auth logout "$REGISTRY_HOSTNAME"
+elif is_tool_available "buildah --version"; then
+  buildah_logout "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "cosign" "cosign version"; then
-  echo 'WARNING: logging out not supported for cosign cli'
+elif is_tool_available "crane version"; then
+  crane_logout "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "podman" "podman version"; then
-  echo "Logging out to $REGISTRY_HOSTNAME with podman cli"
-  podman logout "$REGISTRY_HOSTNAME"
+elif is_tool_available "cosign version"; then
+  cosign_logout "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "skopeo" "skopeo version"; then
-  echo "Logging out to $REGISTRY_HOSTNAME with skopeo cli"
-  skopeo logout "$REGISTRY_HOSTNAME"
+elif is_tool_available "podman version"; then
+  podman_logout "$REGISTRY_HOSTNAME"
 
-elif [[ -n "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL" ]]; then
-  echo "No cli tool called $BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL is available to logout."
-  exit 1
+elif is_tool_available "skopeo version"; then
+  skopeo_logout "$REGISTRY_HOSTNAME"
 
 else
   echo "No cli is available to auth. Delete creds from $HOME/.docker/config.json"
