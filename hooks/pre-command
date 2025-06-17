@@ -10,7 +10,6 @@ DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
 # shellcheck source=lib/shared.bash
 . "$DIR/../lib/shared.bash"
 
-
 if [[ "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH" == kv* ]]; then
   VAULT_METHOD="kv get"
 else
