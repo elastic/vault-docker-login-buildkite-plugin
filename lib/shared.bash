@@ -19,7 +19,7 @@ is_tool_available() {
       return 0  # true
     fi
   fi
-  
+
   return 1  # false
 }
 
