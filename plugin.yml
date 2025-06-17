@@ -8,4 +8,6 @@ configuration:
       type: string
     disable_logout:
       type: boolean
+    tool:
+      type: string
   additionalProperties: false

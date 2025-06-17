@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+# shellcheck source=lib/shared.bash
+. "$DIR/../lib/shared.bash"
+# shellcheck source=lib/logout.bash
+. "$DIR/../lib/logout.bash"
+
 echo "~~~ Log out to $REGISTRY_HOSTNAME container registry"
 
 if [[ "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT:-false}" = "true" ]]; then
@@ -7,28 +14,28 @@ if [[ "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT:-false}" = "true" ]]
   exit 0
 fi
 
-if docker --version >/dev/null 2>&1; then
-  echo "Logging out to $REGISTRY_HOSTNAME with docker cli"
-  docker logout "$REGISTRY_HOSTNAME"
+if [[ -n "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL" ]]; then
+  logout "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL}" "$REGISTRY_HOSTNAME"
+  exit 0
+fi
 
-elif buildah --version >/dev/null 2>&1; then
-  echo "Logging out to $REGISTRY_HOSTNAME with buildah cli"
-  buildah logout "$REGISTRY_HOSTNAME"
+if is_tool_available "docker --version"; then
+  docker_logout "$REGISTRY_HOSTNAME"
 
-elif crane version >/dev/null 2>&1; then
-  echo "Logging out to $REGISTRY_HOSTNAME with crane cli"
-  crane auth logout "$REGISTRY_HOSTNAME"
+elif is_tool_available "buildah --version"; then
+  buildah_logout "$REGISTRY_HOSTNAME"
 
-elif cosign version >/dev/null 2>&1; then
-  echo 'WARNING: logging out not supported for cosign cli'
+elif is_tool_available "crane version"; then
+  crane_logout "$REGISTRY_HOSTNAME"
 
-elif podman version >/dev/null 2>&1; then
-  echo "Logging out to $REGISTRY_HOSTNAME with podman cli"
-  podman logout "$REGISTRY_HOSTNAME"
+elif is_tool_available "cosign version"; then
+  cosign_logout "$REGISTRY_HOSTNAME"
 
-elif skopeo version >/dev/null 2>&1; then
-  echo "Logging out to $REGISTRY_HOSTNAME with skopeo cli"
-  skopeo logout "$REGISTRY_HOSTNAME"
+elif is_tool_available "podman version"; then
+  podman_logout "$REGISTRY_HOSTNAME"
+
+elif is_tool_available "skopeo version"; then
+  skopeo_logout "$REGISTRY_HOSTNAME"
 
 else
   echo "No cli is available to auth. Delete creds from $HOME/.docker/config.json"
