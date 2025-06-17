@@ -5,6 +5,15 @@ steps:
       provider: "gcp"
       image: family/core-ubuntu-2204
 
+  - label: ":shell: Tests"
+    plugins:
+      - plugin-tester#v1.1.1:
+          folders:
+            - tests
+    agents:
+      provider: "gcp"
+      image: family/core-ubuntu-2204
+
   - label: ":shell: Shellcheck"
     command: "make shellcheck"
     agents:
