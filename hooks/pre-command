@@ -25,57 +25,28 @@ REGISTRY_HOSTNAME=$(vault $VAULT_METHOD -field=hostname "$BUILDKITE_PLUGIN_VAULT
 
 echo "~~~ Log in to $REGISTRY_HOSTNAME container registry"
 
-if is_tool_available "docker" "docker --version"; then
-  echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with docker cli"
-  # For dockerhub we must unset the hostname argument during login
-  # for credentials to be stored correctly in .docker/config.json
-  # See: https://elasticco.atlassian.net/browse/REL-1195
-  if [ "$REGISTRY_HOSTNAME" == "index.docker.io" ]; then
-    REGISTRY_HOSTNAME=""
-  fi
-  docker login \
-    --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
-    "$REGISTRY_HOSTNAME"
+if [[ -n "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL}" ]]; then
+  login "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL}" "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" "$REGISTRY_HOSTNAME"
+  exit 0
+fi
 
-elif is_tool_available "buildah" "buildah --version"; then
-  echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with buildah cli"
-  buildah login \
-    --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
-    "$REGISTRY_HOSTNAME"
+if is_tool_available "docker --version"; then
+  docker_login "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "crane" "crane version"; then
-  echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with crane cli"
-  crane auth login \
-    --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
-    "$REGISTRY_HOSTNAME"
+elif is_tool_available "buildah --version"; then
+  buildah_login "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "cosign" "cosign version"; then
-  echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with cosign cli"
-  cosign login \
-    --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
-    "$REGISTRY_HOSTNAME"
+elif is_tool_available "crane version"; then
+  crane_login "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "podman" "podman version"; then
-  echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with podman cli"
-  podman login \
-    --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
-    "$REGISTRY_HOSTNAME"
+elif is_tool_available "cosign version"; then
+  cosign_login "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" "$REGISTRY_HOSTNAME"
 
-elif is_tool_available "skopeo" "skopeo version"; then
-  echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with skopeo cli"
-  skopeo login \
-    --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
-    "$REGISTRY_HOSTNAME"
+elif is_tool_available "podman version"; then
+  podman_login "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" "$REGISTRY_HOSTNAME"
 
-elif [[ -n "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL" ]]; then
-  echo "No cli tool called $BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_TOOL is available to auth."
-  exit 1
+elif is_tool_available "skopeo version"; then
+  skopeo_login "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" "$REGISTRY_HOSTNAME"
 
 else
   echo "No cli is available to auth. Save creds to $HOME/.docker/config.json"
