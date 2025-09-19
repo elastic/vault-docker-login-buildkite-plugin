@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   tests:
-    image: buildkite/plugin-tester:v4.1.1
+    image: buildkite/plugin-tester:v4.2.0@sha256:21067012f59af6b8316cceb95850e89a542b50338c72d209a68bbebb33aff8c3
     volumes:
       - .:/plugin
 
