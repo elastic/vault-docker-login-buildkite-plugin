@@ -1,7 +1,9 @@
 name: Vault Docker Login Buildkite Plugin
 description: Logs into docker with credentials stored in vault
 author: https://github.com/alpar-t
-requirements: []
+requirements:
+  - bash
+  - vault
 configuration:
   properties:
     secret_path:
