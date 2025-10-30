@@ -14,8 +14,8 @@ setup () {
     "kv get -field=hostname \* : echo hostname"
 
   stub docker \
-    "exit 0" \
-    "login \* : exit 0"
+    "--version : exit 0" \
+    "login --username username --password password hostname : exit 0"
 }
 
 @test "Clean login execution with kv" {
