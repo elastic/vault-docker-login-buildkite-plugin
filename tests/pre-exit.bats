@@ -4,7 +4,13 @@ setup () {
   load "${BATS_PLUGIN_PATH}/load.bash"
   # export DOCKER_STUB_DEBUG=/dev/tty
 
+  # Add vault stub for pre-exit tests
+  stub vault \
+    "-v : exit 0" \
+    "kv get -field=hostname \* : echo registry.example.com"
+
   export REGISTRY_HOSTNAME="registry.example.com"
+  export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH="kv/data/docker-login"
 }
 
 @test "Clean logout execution" {

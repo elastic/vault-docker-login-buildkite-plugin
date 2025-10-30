@@ -1,15 +1,8 @@
 #!/bin/bash
 
-if ! vault -v >/dev/null 2>&1; then
-  echo "Could not find a vault cli to retrieve docker login secrets"
-  exit 1
-fi
-
-if [[ "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH" == kv* ]]; then
-  VAULT_METHOD="kv get"
-else
-  VAULT_METHOD="read"
-fi
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+. "${DIR}/../lib/setup.bash"
 
 # shellcheck disable=SC2086
 REGISTRY_USERNAME=$(vault $VAULT_METHOD -field=username "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
