@@ -54,7 +54,7 @@ elif podman version >/dev/null 2>&1; then
     --password "$REGISTRY_PASSWORD" \
     "$REGISTRY_HOSTNAME"
 
-elif skopeo version >/dev/null 2>&1; then
+elif skopeo version >/dev/null 2>&1 || skopeo --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with skopeo cli"
   skopeo login \
     --username "$REGISTRY_USERNAME" \
