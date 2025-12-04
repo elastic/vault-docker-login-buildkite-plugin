@@ -33,7 +33,7 @@ elif podman version >/dev/null 2>&1; then
   echo "Logging out to $REGISTRY_HOSTNAME with podman cli"
   podman logout "$REGISTRY_HOSTNAME"
 
-elif skopeo version >/dev/null 2>&1; then
+elif skopeo version >/dev/null 2>&1 || skopeo --version >/dev/null 2>&1; then
   echo "Logging out to $REGISTRY_HOSTNAME with skopeo cli"
   skopeo logout "$REGISTRY_HOSTNAME"
 
