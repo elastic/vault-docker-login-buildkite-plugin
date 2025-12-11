@@ -5,7 +5,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "${DIR}/../lib/setup.bash"
 
 if [[ "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT:-false}" = "true" ]]; then
-  echo 'WARNING: not logging out'
+  echo '~~~ Skipping container registry logout'
   exit 0
 fi
 
