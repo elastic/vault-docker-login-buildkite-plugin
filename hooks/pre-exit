@@ -4,15 +4,15 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 . "${DIR}/../lib/setup.bash"
 
+if [[ "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT:-false}" = "true" ]]; then
+  echo '~~~ Skipping container registry logout'
+  exit 0
+fi
+
 # shellcheck disable=SC2086
 REGISTRY_HOSTNAME=$(vault $VAULT_METHOD -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
 
 echo "~~~ Log out to $REGISTRY_HOSTNAME container registry"
-
-if [[ "${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_DISABLE_LOGOUT:-false}" = "true" ]]; then
-  echo 'WARNING: not logging out'
-  exit 0
-fi
 
 if docker --version >/dev/null 2>&1; then
   echo "Logging out to $REGISTRY_HOSTNAME with docker cli"
