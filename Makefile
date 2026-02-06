@@ -3,10 +3,7 @@
 all: lint pre-commit shellcheck tests
 
 tests:
-	docker compose \
-	  run --rm \
-	  	-v "${PWD}:/app" \
-	  	tests
+	docker compose run --rm tests
 
 lint:
 	docker compose run lint
