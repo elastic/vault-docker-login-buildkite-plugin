@@ -51,5 +51,5 @@ setup () {
   run "$PWD/hooks/pre-exit"
 
   assert_success
-  assert_output --partial 'WARNING: not logging out'
+  assert_output --partial 'Skipping container registry logout'
 }
