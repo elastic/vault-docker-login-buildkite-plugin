@@ -21,45 +21,45 @@ if docker --version >/dev/null 2>&1; then
   if [ "$REGISTRY_HOSTNAME" == "index.docker.io" ]; then
     REGISTRY_HOSTNAME=""
   fi
-  printf '%s' "$REGISTRY_PASSWORD" | docker login \
+  docker login \
     --username "$REGISTRY_USERNAME" \
     --password-stdin \
-    "$REGISTRY_HOSTNAME"
+    "$REGISTRY_HOSTNAME" <<< "$REGISTRY_PASSWORD"
 
 elif buildah --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with buildah cli"
-  printf '%s' "$REGISTRY_PASSWORD" | buildah login \
+  buildah login \
     --username "$REGISTRY_USERNAME" \
     --password-stdin \
-    "$REGISTRY_HOSTNAME"
+    "$REGISTRY_HOSTNAME" <<< "$REGISTRY_PASSWORD"
 
 elif crane version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with crane cli"
-  printf '%s' "$REGISTRY_PASSWORD" | crane auth login \
+  crane auth login \
     --username "$REGISTRY_USERNAME" \
     --password-stdin \
-    "$REGISTRY_HOSTNAME"
+    "$REGISTRY_HOSTNAME" <<< "$REGISTRY_PASSWORD"
 
 elif cosign version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with cosign cli"
-  printf '%s' "$REGISTRY_PASSWORD" | cosign login \
+  cosign login \
     --username "$REGISTRY_USERNAME" \
     --password-stdin \
-    "$REGISTRY_HOSTNAME"
+    "$REGISTRY_HOSTNAME" <<< "$REGISTRY_PASSWORD"
 
 elif podman version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with podman cli"
-  printf '%s' "$REGISTRY_PASSWORD" | podman login \
+  podman login \
     --username "$REGISTRY_USERNAME" \
     --password-stdin \
-    "$REGISTRY_HOSTNAME"
+    "$REGISTRY_HOSTNAME" <<< "$REGISTRY_PASSWORD"
 
 elif skopeo version >/dev/null 2>&1 || skopeo --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with skopeo cli"
-  printf '%s' "$REGISTRY_PASSWORD" | skopeo login \
+  skopeo login \
     --username "$REGISTRY_USERNAME" \
     --password-stdin \
-    "$REGISTRY_HOSTNAME"
+    "$REGISTRY_HOSTNAME" <<< "$REGISTRY_PASSWORD"
 
 else
   echo "No cli is available to auth. Save creds to $HOME/.docker/config.json"
