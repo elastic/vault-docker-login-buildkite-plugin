@@ -21,44 +21,44 @@ if docker --version >/dev/null 2>&1; then
   if [ "$REGISTRY_HOSTNAME" == "index.docker.io" ]; then
     REGISTRY_HOSTNAME=""
   fi
-  docker login \
+  echo "$REGISTRY_PASSWORD" | docker login \
     --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
+    --password-stdin \
     "$REGISTRY_HOSTNAME"
 
 elif buildah --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with buildah cli"
-  buildah login \
+  echo "$REGISTRY_PASSWORD" | buildah login \
     --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
+    --password-stdin \
     "$REGISTRY_HOSTNAME"
 
 elif crane version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with crane cli"
-  crane auth login \
+  echo "$REGISTRY_PASSWORD" | crane auth login \
     --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
+    --password-stdin \
     "$REGISTRY_HOSTNAME"
 
 elif cosign version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with cosign cli"
-  cosign login \
+  echo "$REGISTRY_PASSWORD" | cosign login \
     --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
+    --password-stdin \
     "$REGISTRY_HOSTNAME"
 
 elif podman version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with podman cli"
-  podman login \
+  echo "$REGISTRY_PASSWORD" | podman login \
     --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
+    --password-stdin \
     "$REGISTRY_HOSTNAME"
 
 elif skopeo version >/dev/null 2>&1 || skopeo --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with skopeo cli"
-  skopeo login \
+  echo "$REGISTRY_PASSWORD" | skopeo login \
     --username "$REGISTRY_USERNAME" \
-    --password "$REGISTRY_PASSWORD" \
+    --password-stdin \
     "$REGISTRY_HOSTNAME"
 
 else
