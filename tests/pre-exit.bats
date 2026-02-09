@@ -13,6 +13,13 @@ setup () {
   export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH="kv/data/docker-login"
 }
 
+teardown() {
+  unstub vault || true
+  unstub docker || true
+  unstub skopeo || true
+  unstub rm || true
+}
+
 @test "Clean logout execution" {
   stub docker \
     "exit 0" \
@@ -51,5 +58,5 @@ setup () {
   run "$PWD/hooks/pre-exit"
 
   assert_success
-  assert_output --partial 'WARNING: not logging out'
+  assert_output --partial 'Skipping container registry logout'
 }
