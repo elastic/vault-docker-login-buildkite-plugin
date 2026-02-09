@@ -3,20 +3,17 @@
 all: lint pre-commit shellcheck tests
 
 tests:
-	-docker compose \
-	  run --rm \
-	  	-v "${PWD}:/app" \
-	  	tests
+	docker compose run --rm tests
 
 lint:
-	-docker compose run lint
+	docker compose run lint
 
 pre-commit:
-	-.buildkite/scripts/pre-commit.sh
+	.buildkite/scripts/pre-commit.sh
 
 shellcheck:
-	-docker compose run shellcheck
+	docker compose run shellcheck
 
 clean:
-	-docker compose \
+	docker compose \
 		rm --force --stop
