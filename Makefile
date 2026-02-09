@@ -15,5 +15,5 @@ shellcheck:
 	docker compose run shellcheck
 
 clean:
-	-docker compose \
+	docker compose \
 		rm --force --stop
