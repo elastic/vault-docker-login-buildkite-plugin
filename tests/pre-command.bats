@@ -15,7 +15,7 @@ setup () {
 
   stub docker \
     "--version : exit 0" \
-    "login --username username --password password hostname : exit 0"
+    "login --username username --password-stdin hostname : exit 0"
 }
 
 @test "Clean login execution with kv" {
