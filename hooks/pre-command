@@ -20,14 +20,17 @@ retry_login() {
   local func="$1"
   local attempt=1
   local max_attempts
+  local current_delay
   max_attempts=$(( RETRIES + 1 ))
   while [ "$attempt" -le "$max_attempts" ]; do
     if "$func"; then
       return 0
     fi
     if [ "$attempt" -lt "$max_attempts" ]; then
-      echo "Login attempt $attempt/$max_attempts failed, retrying in $RETRY_DELAY second(s)..."
-      sleep "$RETRY_DELAY"
+      # Exponential backoff: delay doubles with each attempt (base * 2^(attempt-1))
+      current_delay=$(( RETRY_DELAY * (1 << (attempt - 1)) ))
+      echo "Login attempt $attempt/$max_attempts failed, retrying in $current_delay second(s)..."
+      sleep "$current_delay"
     fi
     attempt=$(( attempt + 1 ))
   done
