@@ -10,4 +10,8 @@ configuration:
       type: string
     disable_logout:
       type: boolean
+    retries:
+      type: integer
+    retry_delay:
+      type: integer
   additionalProperties: false
