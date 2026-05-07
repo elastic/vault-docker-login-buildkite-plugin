@@ -26,7 +26,7 @@ retry_login() {
       return 0
     fi
     if [ "$attempt" -lt "$max_attempts" ]; then
-      echo "Login attempt $attempt/$max_attempts failed, retrying in $RETRY_DELAY seconds..."
+      echo "Login attempt $attempt/$max_attempts failed, retrying in $RETRY_DELAY second(s)..."
       sleep "$RETRY_DELAY"
     fi
     attempt=$(( attempt + 1 ))
