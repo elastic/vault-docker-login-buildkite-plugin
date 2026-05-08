@@ -1,4 +1,5 @@
 #!/usr/bin/env bats
+# shellcheck disable=SC2030,SC2031  # export inside bats @test subshells is intentional
 
 setup () {
   load "${BATS_PLUGIN_PATH}/load.bash"
