@@ -11,7 +11,32 @@ REGISTRY_PASSWORD=$(vault $VAULT_METHOD -field=password "$BUILDKITE_PLUGIN_VAULT
 # shellcheck disable=SC2086
 REGISTRY_HOSTNAME=$(vault $VAULT_METHOD -field=hostname "$BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH")
 
+RETRIES="${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_RETRIES:-3}"
+RETRY_DELAY="${BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_RETRY_DELAY:-5}"
+
 echo "~~~ Log in to $REGISTRY_HOSTNAME container registry"
+
+retry_login() {
+  local func="$1"
+  local attempt=1
+  local max_attempts
+  local current_delay
+  max_attempts=$((RETRIES + 1))
+  while [ "$attempt" -le "$max_attempts" ]; do
+    if "$func"; then
+      return 0
+    fi
+    if [ "$attempt" -lt "$max_attempts" ]; then
+      # Exponential backoff: delay doubles with each attempt (base * 2^(attempt-1))
+      current_delay=$((RETRY_DELAY * (1 << (attempt - 1))))
+      echo "Login attempt $attempt/$max_attempts failed, retrying in $current_delay second(s)..."
+      sleep "$current_delay"
+    fi
+    attempt=$((attempt + 1))
+  done
+  echo "Login failed after $max_attempts attempt(s)"
+  return 1
+}
 
 if docker --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with docker cli"
@@ -21,45 +46,63 @@ if docker --version >/dev/null 2>&1; then
   if [ "$REGISTRY_HOSTNAME" == "index.docker.io" ]; then
     REGISTRY_HOSTNAME=""
   fi
-  docker login \
-    --username "$REGISTRY_USERNAME" \
-    --password-stdin \
-    "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  _do_login() {
+    docker login \
+      --username "$REGISTRY_USERNAME" \
+      --password-stdin \
+      "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  }
+  retry_login _do_login
 
 elif buildah --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with buildah cli"
-  buildah login \
-    --username "$REGISTRY_USERNAME" \
-    --password-stdin \
-    "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  _do_login() {
+    buildah login \
+      --username "$REGISTRY_USERNAME" \
+      --password-stdin \
+      "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  }
+  retry_login _do_login
 
 elif crane version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with crane cli"
-  crane auth login \
-    --username "$REGISTRY_USERNAME" \
-    --password-stdin \
-    "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  _do_login() {
+    crane auth login \
+      --username "$REGISTRY_USERNAME" \
+      --password-stdin \
+      "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  }
+  retry_login _do_login
 
 elif cosign version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with cosign cli"
-  cosign login \
-    --username "$REGISTRY_USERNAME" \
-    --password-stdin \
-    "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  _do_login() {
+    cosign login \
+      --username "$REGISTRY_USERNAME" \
+      --password-stdin \
+      "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  }
+  retry_login _do_login
 
 elif podman version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with podman cli"
-  podman login \
-    --username "$REGISTRY_USERNAME" \
-    --password-stdin \
-    "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  _do_login() {
+    podman login \
+      --username "$REGISTRY_USERNAME" \
+      --password-stdin \
+      "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  }
+  retry_login _do_login
 
 elif skopeo version >/dev/null 2>&1 || skopeo --version >/dev/null 2>&1; then
   echo "Logging in to $REGISTRY_HOSTNAME as $REGISTRY_USERNAME with skopeo cli"
-  skopeo login \
-    --username "$REGISTRY_USERNAME" \
-    --password-stdin \
-    "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  _do_login() {
+    skopeo login \
+      --username "$REGISTRY_USERNAME" \
+      --password-stdin \
+      "$REGISTRY_HOSTNAME" <<<"$REGISTRY_PASSWORD"
+  }
+  retry_login _do_login
 
 else
   echo "No cli is available to auth. Save creds to $HOME/.docker/config.json"
@@ -67,5 +110,5 @@ else
   echo '{"auths": {"'"$REGISTRY_HOSTNAME"'": {"auth": "'"$(echo -n "$REGISTRY_USERNAME":"$REGISTRY_PASSWORD" | base64 --wrap=0)"'"}}}' >"$HOME/.docker/config.json"
 fi
 
-# export to help with the logout
+# export to help with the logout
 export REGISTRY_HOSTNAME
