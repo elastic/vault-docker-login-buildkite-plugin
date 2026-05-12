@@ -19,7 +19,7 @@ Add the following to your `pipeline.yml`:
 steps:
   - command: ls
     plugins:
-      - elastic/vault-docker-login#v0.7.0:
+      - elastic/vault-docker-login#v0.8.0:
           secret_path: 'secret/ci/elastic-<<your-repo>>/container-registry/<<credentials>>'
           disable_logout: true
           retries: 3
