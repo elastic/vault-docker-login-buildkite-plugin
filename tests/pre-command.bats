@@ -74,6 +74,20 @@ teardown() {
   assert_output --partial 'Login failed after 3 attempt(s)'
 }
 
+@test "Login failure is reported when hook is sourced conditionally" {
+  export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH="kv/data/docker-login"
+  export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_RETRIES="0"
+
+  stub docker \
+    "--version : exit 0" \
+    "login --username username --password-stdin hostname : exit 1"
+
+  run bash -c 'if source "$1"; then exit 0; else exit 1; fi' bash "$PWD/hooks/pre-command"
+
+  assert_failure
+  assert_output --partial 'Login failed after 1 attempt(s)'
+}
+
 @test "No retries when retries is set to 0" {
   export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_SECRET_PATH="kv/data/docker-login"
   export BUILDKITE_PLUGIN_VAULT_DOCKER_LOGIN_RETRIES="0"
