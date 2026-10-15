@@ -1,19 +1,19 @@
 version: '3.7'
 services:
   tests:
-    image: buildkite/plugin-tester:v4.1.1
+    image: buildkite/plugin-tester:v4.1.1@sha256:581f73aca88169912e23809f323437cced3cf22c28794bd7f96fbdf1c2caa5ab
     platform: linux/amd64
     volumes:
       - .:/plugin
 
   lint:
-    image: buildkite/plugin-linter
+    image: buildkite/plugin-linter@sha256:477296eb214457faa3800f9b0f8b9dab39c3a306abcab3dd14f461c1e5b7d2f1
     command: ['--id', 'elastic/vault-docker-login']
     volumes:
       - ".:/plugin"
 
   shellcheck:
-    image: koalaman/shellcheck:latest
+    image: koalaman/shellcheck:latest@sha256:aa09dfeed2fd15660650aaa80888ed739e58902b4e72f3f535d8a1f24a69a3fb
     command: -x hooks/pre-command hooks/pre-exit
     working_dir: /plugin
     volumes:
