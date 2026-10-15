@@ -35,7 +35,7 @@ retry_login() {
     attempt=$((attempt + 1))
   done
   echo "Login failed after $max_attempts attempt(s)"
-  return 1
+  exit 1
 }
 
 if docker --version >/dev/null 2>&1; then
